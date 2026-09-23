@@ -1,0 +1,8 @@
+[
+  {"id": "1", "nombre": "Ración de Chouta Caliente", "categoria": "Alimento", "precioEsferas": "5", "descripcion": "Especialidad herdaziana...", "stock": 5},
+  {"id": "2", "nombre": "Ungüento de Rocabrotes", "categoria": "Medicina", "precioEsferas": "15", "descripcion": "Extracto de la pulpa...", "stock": 3},
+  {"id": "3", "nombre": "Bolsa de Esferas (Diamante)", "categoria": "Energía", "precioEsferas": "50", "descripcion": "Emiten un brillo constante.", "stock": 3},
+  {"id": "4", "nombre": "Fabrial de Alerta", "categoria": "Accesorio", "precioEsferas": "120", "descripcion": "Vibra con Portadores del Vacío.", "stock": 1},
+  {"id": "5", "nombre": "Frasco de Vino de Lavis", "categoria": "Suministros", "precioEsferas": "25", "descripcion": "El alcohol más común en Alezcar.", "stock": 10},
+  {"id": "6", "nombre": "Mapa de los Altos Príncipes", "categoria": "Misión", "precioEsferas": "80", "descripcion": "Rutas de exploración seguras.", "stock": 1}
+]

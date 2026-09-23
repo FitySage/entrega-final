@@ -1,0 +1,95 @@
+body {
+    background-color: #202940;
+    font-family: "Sekuya", system-ui;
+    color: #9A8678;
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    text-align: center;
+}
+
+.grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
+}
+
+.card {
+    background-color: #4B4038;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    border: 5px solid #202940;
+    width: 260px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    border-color: #CAAA98;
+    transform: translateY(-5px);
+}
+
+.card img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    align-self: center;
+}
+
+.btn-mostrar {
+    display: inline-block;
+    font-family: "Sekuya", system-ui;
+    background-color: #CAAA98;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    color: #202940;
+    transition: background-color 0.3s ease;
+}
+
+.btn-mostrar:hover {
+    background-color: #e4caa4;
+}
+
+.layout-almacen {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#items {
+    width: 70%;
+}
+
+.panel-alforja {
+    width: 25%; 
+    background-color: #4B4038;
+    border: 2px solid #CAAA98;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    text-align: center;
+    align-self: flex-start;
+    position: sticky;
+    top: 40px;
+    z-index: 100;
+}
+
+.ocultar {
+    display: none !important;
+}
+
+.dialogo-oculto1{
+    display: none !important;
+}

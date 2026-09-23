@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sekuya&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+    <script defer src="js/main.js"></script>
+    <title>Aventura RPG - Roshar</title>
+</head>
+<body>
+
+
+    <section id="pj-container">
+        <h1>Bienvenido</h1>
+        <h2>Selecciona a tu Radiante</h2>
+        <div id="grilla-personajes" class="grid-container"></div>
+    </section>
+
+    <section id="ventana-almacen" class="ocultar">
+        <h1>Almacén</h1>
+        <h2 id="titulo-almacen">Recuerda solo llevar lo necesario</h2>
+        <h3 id="contador-alforja">Capacidad de tu alforja: 0 / 5</h3>
+        
+        <div class="layout-almacen">
+            <div id="items" class="grid-container"></div>
+
+            
+            <aside class="panel-alforja">
+                <h3>Tus Provisiones</h3>
+                <div id="alforja-container"></div>
+                <button id="btn-vaciar" class="btn-mostrar">Vaciar Alforja</button>
+                <button id="btn-partir" class="btn-mostrar" style="margin-top:10px;">¡Comenzar Viaje!</button>
+            </aside>
+        </div>
+    </section>
+
+    <section id="dialogo-1" class="dialogo-oculto1">
+        <h2>Hay que atacar a su capitan!</h2>
+        <p>Vencerlo los hará retroceder y nos dara tiempo de pensar. !A la carga!
+        </p>
+
+
+    </section>
+
+    <footer>
+        <h3>La historia y personajes mencionados son propiedad intelectual de Brandon Sanderson y DragonSteel SA</h3>
+        <h3>Si quieres adentrarte mas en su mundo recomendamos visitar su sitio web y leer o buscar sus libros</h3>
+    
+    </footer>
+</body>
+</html>
