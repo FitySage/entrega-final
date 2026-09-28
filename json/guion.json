@@ -1,0 +1,22 @@
+[
+  {
+    "titulo": "¡Hay que atacar a su capitán!",
+    "texto": "Vencerlo los hará retroceder y nos dará tiempo de pensar. ¡A la carga!"
+  },
+  {
+    "titulo": "Cuidado con los flancos",
+    "texto": "Se están reagrupando en la colina. Mantengan la formación."
+  },
+  {
+    "titulo": "Parece que su capitan es un simple lacayo",
+    "texto": "Hay que ir con cautela, puede ser una trampa"
+  },
+  {
+    "titulo": "¡JA, Son mas tontos de lo que parece!",
+    "texto": "Ciertamente nos subestimaron, pero no creo que corramos la misma suerte la proxima"
+  },
+  {
+    "titulo": "Hora de descansar",
+    "texto": "Hemos ganado tiempo. Revisa tus provisiones antes de la próxima tormenta."
+  }
+]

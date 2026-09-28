@@ -1,0 +1,23 @@
+.efecto-tipeado{
+    text-align: center;
+    
+}
+.efecto-tipeado::after {
+    content: "|";
+    animation: parpadeo 0.7s infinite;
+    margin-left: 2px;
+    color: #CAAA98;
+}
+
+@keyframes parpadeo {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.texto-flotante {
+    padding: auto;
+    text-align: center;
+    background-color: aliceblue;
+    
+
+}

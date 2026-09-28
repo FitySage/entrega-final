@@ -50,6 +50,7 @@ h1, h2, h3 {
     background-color: #CAAA98;
     border-radius: 20px;
     padding: 10px 20px;
+    margin: 5px;
     cursor: pointer;
     border: none;
     font-weight: bold;
@@ -86,10 +87,16 @@ h1, h2, h3 {
     z-index: 100;
 }
 
-.ocultar {
-    display: none !important;
+footer {
+    background-color: #202940;
+    text-align: center;
+    align-self: flex-end;
+    position: sticky;
+    bottom: 0px;
+    border: 2px solid #000000;
+    border-radius: 5px;
 }
 
-.dialogo-oculto1{
+.ocultar {
     display: none !important;
 }

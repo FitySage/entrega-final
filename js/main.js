@@ -6,15 +6,19 @@ const contenedorItems = document.getElementById('items');
 const contenedorAlforja = document.getElementById('alforja-container');
 const contadorAlforja = document.getElementById('contador-alforja');
 const btnVaciar = document.getElementById('btn-vaciar');
+const btnAvanzar = document.getElementById('btn-avanzar');
+const guiones = document.getElementById('dialogos');
 const carga = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const LIMITE_ALFORJA = 5;
 let personajeElegido = "";
+let guionHistoria = [];
+let pasoActual = 0;
+let sprenNarrador = "Voz Misteriosa";
 let alforja = [];
 
 let catalogoAlmacen = [];
 let imagenesPoke = [];
-
 const obtenerDetallesPj = async () => {
     try {
         const response = await fetch('./json/characters.json');
@@ -23,6 +27,8 @@ const obtenerDetallesPj = async () => {
         mostrarDetallesPj(detalles);
     } catch (error) {
         console.error('Error:', error);
+    } finally {
+        console.log("Carga de personajes finalizado.")
     }
 };
 
@@ -86,7 +92,7 @@ const renderizarVitrina = () => {
     contenedorItems.innerHTML = "";
 
     catalogoAlmacen.forEach((dato, index) => {
-        const { nombre, descripcion, stock } = dato;
+        const { nombre, descripcion, efecto, stock } = dato;
         const imgPokemon = imagenesPoke[index].sprites.default;
 
         const cantidadEnAlforja = alforja.filter(item => item.nombre === nombre).length;
@@ -99,11 +105,14 @@ const renderizarVitrina = () => {
             <h3>${nombre}</h3>
             <img src="${imgPokemon}" alt="${nombre}" width="70">
             <p>${descripcion}</p>
+            <p>${efecto}</p>
             <p><strong>Cantidad disponible:</strong> ${stockDinamico}</p>
             <button class="btn-mostrar btn-agarrar-item" data-item='${JSON.stringify(dato)}' ${stockDinamico === 0 ? "disabled" : ""}>Agarrar</button>
         `;
         contenedorItems.appendChild(tarjeta);
     });
+
+
 
     document.querySelectorAll('.btn-agarrar-item').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -138,7 +147,7 @@ const renderizarAlforja = () => {
         const itemP = document.createElement("p");
         itemP.innerHTML = `
             ${item.nombre} 
-            <button class="btn-quitar" data-index="${index}" style="margin-left:10px; cursor:pointer;">❌</button>
+            <button class="btn-quitar" data-index="${index}">❌</button>
         `;
         contenedorAlforja.appendChild(itemP);
     });
@@ -174,9 +183,9 @@ setTimeout(() => {
     Swal.fire({
         title: "Bienvenido a esta pequeña aventura en Roshar",
         text: "En esta aventura RGP elijes a uno de los 4 personajes seleccionables, lo equipas con items y luego comienzas tu aventura, adentrandote un poco en la historia del cosmere y luchando para llegar a algun sitio",
-        footer: "Esperemos puedas disfrutarlo. si quedas con ganas de mas puedes buscas la saga de novelas del Archivo de las tormentas",
+        footer: "Esperemos puedas disfrutarlo. si quedas con ganas de mas puedes buscas la saga de novelas del -Archivo de las tormentas-",
         theme: 'auto',
-        width: "950px",
+        width: "1200px",
         showClass: {
             popup: `
       animate__animated
@@ -191,3 +200,55 @@ setTimeout(() => {
     ` }
     });
 }, 2000)
+
+const btnAvanzarDialogo = document.getElementById('btn-avanzar-dialogo');
+btnAvanzar.addEventListener('click', async () => {
+    seccionAlmacen.classList.add('ocultar');
+    guiones.classList.remove('ocultar');
+
+    try {
+        const [resPjs, resDialogos] = await Promise.all([
+            fetch('./json/characters.json'),
+            fetch('./json/guion.json')
+        ]);
+
+        const personajes = await resPjs.json();
+        guionHistoria = await resDialogos.json();
+        const personajeActual = personajes.find(pj => pj.nombre === personajeElegido);
+        sprenNarrador = personajeActual.spren || "Voz Misteriosa";
+
+        pasoActual = 0;
+        renderizarDialogo();
+
+    } catch (error) {
+        console.log("Error al cargar historia", error);
+        document.getElementById("caja-dialogos").innerHTML = "<P>Error de conexión en Roshar.</p>"
+    }
+});
+
+const renderizarDialogo = () => {
+    const cajaDialogos = document.getElementById("caja-dialogos");
+    if (pasoActual >= guionHistoria.length) {
+        cajaDialogos.innerHTML = `
+        <h2 class="efecto-tipeado">La Expedicion comienza...</h2>
+        <p class="efecto-tipeado">Has completado los preparativos. ¡Que las tormentas te bendigan!</p>`;
+        btnAvanzarDialogo.classList.add("ocultar")
+        iniciarAnimacionesTexto();
+        return;
+    }
+
+    const dialogoDeTurno = guionHistoria[pasoActual];
+
+    cajaDialogos.innerHTML = `
+    <h2>${sprenNarrador} se materializa y dice:</h2>
+    <h3 class="efecto-tipeado">"${dialogoDeTurno.titulo}"</h3>
+    <p class="efecto-tipeado">${dialogoDeTurno.texto}</p>
+    `;
+    iniciarAnimacionesTexto();
+
+};
+
+btnAvanzarDialogo.addEventListener('click', () => {
+    pasoActual++;
+    renderizarDialogo();
+});
