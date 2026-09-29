@@ -90,10 +90,10 @@ h1, h2, h3 {
 footer {
     background-color: #202940;
     text-align: center;
+    align-items: end;
+    align-self: auto;
     align-self: flex-end;
-    position: sticky;
-    bottom: 0px;
-    border: 2px solid #000000;
+    border: 10px solid #000000;
     border-radius: 5px;
 }
 
