@@ -230,18 +230,23 @@ btnAvanzar.addEventListener('click', async () => {
 });
 
 const capitanEnemigo = {
+    nombreEnemigo: "Eshonai",
     raza: "Portador del Vacío",
     tipo: "fusionado",
-    estadistica: "PV:90 AD:20 Def:40",
-    ataqueMAx: 23,
+    ataqueMax: 20,
     miniatura: "./assets/imgs/enemigos/portador.jpg"
 };
+
+let vidaActualJugador = 0;
+let vidaActualEnemigo = 90;
+let datosHeroeActual = null;
+
 const renderizarDialogo = () => {
     const cajaDialogos = document.getElementById("caja-dialogos");
     if (pasoActual >= guionHistoria.length) {
         cajaDialogos.innerHTML = `
-        <h2 class="efecto-tipeado">La Expedicion comienza...</h2>
-        <p class="efecto-tipeado">Has completado los preparativos. ¡Que las tormentas te bendigan!</p>`;
+        <h2 class="efecto-tipeado">Parece que el enfrentamieto es inevitable</h2>
+        <p class="efecto-tipeado">Demostremos porque fuimos elejidos para el combate</p>`;
         btnAvanzarDialogo.classList.add("ocultar")
         iniciarAnimacionesTexto();
         prepararAsalto();
@@ -252,15 +257,17 @@ const renderizarDialogo = () => {
 
     cajaDialogos.innerHTML = `
     <h2>${sprenNarrador} Se materializa y dice:</h2>
+    <div class="texto-flotante respiracion">
     <h3 class="efecto-tipeado">"${dialogoDeTurno.titulo}"</h3>
     <p class="efecto-tipeado">${dialogoDeTurno.texto}</p>
+    </div>
     `;
     iniciarAnimacionesTexto();
 
 };
 
 const prepararAsalto = async () => {
-    await carga(2500); 
+    await carga(2500);
     
     guiones.classList.add('ocultar');
     seccionPelea.classList.remove('ocultar');
@@ -268,67 +275,97 @@ const prepararAsalto = async () => {
     try {
         const response = await fetch('./json/characters.json');
         const personajes = await response.json();
-        const datosPj = personajes.find(pj => pj.nombre === personajeElegido);
+        datosHéroeActual = personajes.find(pj => pj.nombre === personajeElegido);
 
-        if (datosPj) {
-            mostrarCartaFinal(datosPj);
+        if (datosHéroeActual) {
+            if (personajeElegido === "Kaladin") vidaActualJugador = 100;
+            else if (personajeElegido === "Shallan") vidaActualJugador = 80;
+            else if (personajeElegido === "Dalinar") vidaActualJugador = 120;
+            else if (personajeElegido === "Lift") vidaActualJugador = 70;
+
+            actualizarPantallaCombate("¡La batalla está por comenzar! Prepárate para el asalto.");
         }
     } catch (error) {
-        console.error("Error al cargar la parte final:", error);
+        console.error("Error al cargar la fase de asalto:", error);
     }
 };
 
-const mostrarCartaFinal = (pj) => {
+const actualizarPantallaCombate = (actualizarEstados) => {
     const itemsNombres = alforja.map(item => item.nombre);
     const alforjaTexto = itemsNombres.length > 0 ? itemsNombres.join(", ") : "Vacía";
-    const {nombre, img, orden, estadisticas} = pj;
-    const {raza, miniatura, tipo, estadistica} = capitanEnemigo;
+    const {nombre, img, orden, atributo, estadisticas} = datosHéroeActual
+    const {nombreEnemigo, raza, miniatura, tipo} = capitanEnemigo
     contenedorCartaFinal.innerHTML = `
-        <div class="grid-container" style="width: 100%;">
-        <div class="card-combate">
-                <img src="${img}" alt="${nombre}">
+        <div class="grid-combate">
+            <div class="card-combate">
+                <h3>${nombre}</h3>
+                <img src="${img}" alt="${nombre}" width="100%">
                 <p><strong>Orden:</strong> ${orden}</p>
-                <p><strong>Estadísticas:</strong> ${estadisticas}</p>
-                <p><strong>Alforja actual:</strong> ${alforjaTexto}</p>
+                <p><strong>Atributo:</strong> ${atributo}</p>
+                <p style="font-size: 1.2rem; color: #4aff4a;"><strong>Vida Actual:</strong> ${vidaActualJugador} PV</p>
+                <p><small style="color: #9A8678;">Base original: ${estadisticas}</small></p>
+                <p><strong>Alforja:</strong> ${alforjaTexto}</p>
+            </div>
+
+            <div class="seccion-media">
+                <h2>Estado de la Batalla</h2>
+                <div id="log-combate">${actualizarEstados}</div>
             </div>
 
             <div class="card-combate">
+                <h2> ${nombreEnemigo} </h2>
                 <h3 style="color: #ff6b6b;">${raza}</h3>
-                <img src="${miniatura}" alt="${raza}">
-                <p><strong>Tipo de amenaza:</strong> ${tipo}</p>
-                <p><strong>Atributos:</strong> ${estadistica}</p>
+                <img src="${miniatura}" alt="${raza}" width="100%">
+                <p><strong>Tipo:</strong> ${tipo}</p>
+                <p style="font-size: 1.2rem; color: #ff4a4a;"><strong>Vida Enemigo:</strong> ${vidaActualEnemigo} PV</p>
+                <p><small style="color: #9A8678;">Base original: PV:90 AD:20 Def:40</small></p>
                 <p><strong>Peligrosidad:</strong> Media</p>
             </div>
         </div>
         
-        <div style="text-align: center; width: 100%; margin-top: 20px;">
-            <button class="btn-mostrar" id="btn-comenzar-pelea">Comenzar breve pelea</button>
+        <div style="text-align: center; margin-top: 25px;">
+            <button class="btn-mostrar" id="btn-comenzar-pelea">Lanzar Ataque al Azar</button>
         </div>
     `;
 
-    document.getElementById('btn-comenzar-pelea').addEventListener('click', combateAzar);
+    const btnLucha = document.getElementById('btn-comenzar-pelea');
+    
+    if (vidaActualJugador <= 0 || vidaActualEnemigo <= 0) {
+        btnLucha.disabled = true;
+        btnLucha.textContent = "Combate Finalizado";
+    } else {
+        btnLucha.addEventListener('click', procesarTurnoCombate);
+    }
 };
 
-const combateAzar = () => {
+const procesarTurnoCombate = () => {
     const dañoEnemigo = Math.floor(Math.random() * capitanEnemigo.ataqueMax) + 5; 
     const dañoJugador = Math.floor(Math.random() * 25) + 10; 
 
-    Swal.fire({
-        title: "¡Combate en curso!",
-        html: `
-            <p>Un <strong>${capitanEnemigo.nombre}</strong> aparece desde las sombras de la tormenta.</p>
-            <hr>
-            <p style="color: #ff4a4a;">💥 Recibes <strong>${dañoEnemigo} PV</strong> de daño en el contraataque.</p>
-            <p style="color: #4aff4a;">⚔️ Logras asestar un golpe de <strong>${dañoJugador} AD</strong> al enemigo.</p>
-        `,
-        icon: "warning",
-        confirmButtonText: "Continuar",
-        confirmButtonColor: "#CAAA98"
-    }).then(() => {
-        mostrarToast("Combate finalizado. ¡Has sobrevivido al encuentro!", "#202940");
-    });
-};
+    vidaActualJugador = Math.max(0, vidaActualJugador - dañoEnemigo);
+    vidaActualEnemigo = Math.max(0, vidaActualEnemigo - dañoJugador);
 
+    let logResultado = `
+        <p>Los combatientes se cruzan en el campo...</p>
+        <p style="color: #ff4a4a; margin: 8px 0;">💥 <strong>${capitanEnemigo.nombre}</strong> te inflige <strong>${dañoEnemigo} PV</strong>.</p>
+        <p style="color: #4aff4a; margin: 8px 0;">⚔️ Tu contraataque le asesta <strong>${dañoJugador} de daño</strong>.</p>
+    `;
+
+    if (vidaActualEnemigo <= 0 && vidaActualJugador <= 0) {
+        logResultado += `<h3 style="color: #caaa98; margin-top: 15px;">¡Mutuo K.O.! Ambos cayeron por las heridas.</h3>`;
+        mostrarToast("Empate trágico en Roshar.", "#ff9900"); //
+    } else if (vidaActualEnemigo <= 0) {
+        logResultado += `<h3 style="color: #4aff4a; margin-top: 15px;">¡Victoria! Has derrotado al Capitán.</h3>`;
+        mostrarToast("¡Combate ganado con éxito!", "#09ff00"); //
+    } else if (vidaActualJugador <= 0) {
+        logResultado += `<h3 style="color: #ff4a4a; margin-top: 15px;">Has caído en combate... La tormenta te reclama.</h3>`;
+        mostrarToast("Tu Radiante ha sido derrotado.", "#ff0000"); //
+    } else {
+        mostrarToast("¡Ronda completada!", "#202940"); //
+    }
+
+actualizarPantallaCombate(logResultado);
+};
 
 btnAvanzarDialogo.addEventListener('click', () => {
     pasoActual++;

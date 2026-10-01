@@ -6,7 +6,9 @@ body {
     padding: 20px;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     text-align: center;
 }
 
@@ -74,7 +76,7 @@ h1, h2, h3 {
 }
 
 .panel-alforja {
-    width: 25%; 
+    width: 25%;
     background-color: #4B4038;
     border: 2px solid #CAAA98;
     border-radius: 15px;
@@ -85,6 +87,47 @@ h1, h2, h3 {
     position: sticky;
     top: 40px;
     z-index: 100;
+}
+
+.grid-combate {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #2b354d;
+    border-radius: 20px;
+    border: 3px solid #CAAA98;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.card-combate {
+    background-color: #4B4038;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    border: 4px solid #202940;
+    width: 260px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease;
+}
+
+.card-combate:hover {
+    border-color: #CAAA98;
+    transform: scale(1.02);
+}
+
+.card-combate img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    align-self: center;
 }
 
 footer {

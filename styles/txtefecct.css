@@ -15,9 +15,31 @@
 }
 
 .texto-flotante {
-    padding: auto;
+    margin: 10%;
+    padding: 20px;
     text-align: center;
     background-color: aliceblue;
-    
+    border: 2px solid #CAAA98;
+    border-radius: 15px;
+    display: inline-block;
+    will-change: transform;
+}
 
+.texto-flotante.respiracion {
+    animation-name: respiracion;
+    animation-duration: 4s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+@keyframes respiracion {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
