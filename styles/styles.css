@@ -153,8 +153,8 @@ h3 {
 .ocultar {
     display: none !important;
 }
-
-@media (max-width: 768px) {
+/* responsive - prueba de adaptacion a celulares */
+@media (max-width: 768px) { 
     .layout-alamcen {
         flex-direction: column-reverse;
         align-items: center;
