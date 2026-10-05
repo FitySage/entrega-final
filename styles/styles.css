@@ -25,14 +25,17 @@ h3 {
     border-radius: 20px;
     padding: 15px;
     text-align: center;
-    height: 450px;
+    min-height: 450px;
+    height:auto;
+    width: 100%;
+    max-width: 320px;
     border: 5px solid #202940;
-    width: 320px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: transform 0.3s ease;
+    box-sizing: border-box;
 }
 
 .card:hover {
@@ -47,7 +50,7 @@ h3 {
     align-self: center;
 }
 .card--pj {
-    height: 900px;
+    min-height: 700px;
 }
 .card--tienda {
     height: 450px;
@@ -75,6 +78,7 @@ h3 {
     justify-content: space-between;
     max-width: 1200px;
     margin: 0 auto;
+    gap: 20px;
 }
 
 #items {
@@ -115,12 +119,14 @@ h3 {
     padding: 15px;
     text-align: center;
     border: 4px solid #202940;
-    width: 260px;
+    width: 100%;
+    max-width: 260px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: transform 0.3s ease;
+    box-sizing: border-box;
 }
 
 .card-combate:hover {
@@ -146,4 +152,33 @@ h3 {
 
 .ocultar {
     display: none !important;
+}
+
+@media (max-width: 768px) {
+    .layout-alamcen {
+        flex-direction: column-reverse;
+        align-items: center;
+    }
+
+    #items, .panel-alforja{
+        width: 100%;
+    }
+
+    .panel-alforja {
+        position: static;
+        margin-bottom: 20px;
+    }
+
+    .grid-combate {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card-combate {
+        max-width: 320px;
+    }
+
+    body {
+        padding: 10px;
+    }
 }

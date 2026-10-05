@@ -19,6 +19,9 @@ let pasoActual = 0;
 let sprenNarrador = "Voz Misteriosa";
 let catalogoAlmacen = [];
 let imagenesPoke = [];
+let datosHeroeActual = null;
+let vidaActualJugador = 0;
+let vidaActualEnemigo = 90;
 
 let alforja = JSON.parse(localStorage.getItem('alforjaGuardada')) || [];
 let perfilUsuario = JSON.parse(sessionStorage.getItem('perfilRoshar')) || null;
@@ -47,20 +50,9 @@ setTimeout(() => {
                 const conoceLore = document.getElementById('lore-si').checked;
                 return { nombre, conoceLore };
             },
-            showClass: {
-                popup: `
-      animate__animated
-      animate__fadeInUp
-      animate__faster
-    `
-            },
-            hideClass: {
-                popup: `
-      animate__animated
-      animate__fadeOutDown
-      animate__faster
-    `
-            }
+            showClass: { popup: `animate__animated animate__fadeInUp animate__faster` },
+            hideClass: { popup: `animate__animated animate__fadeOutDown animate__faster` }
+
         }).then((result) => {
             if (result.isConfirmed) {
                 perfilUsuario = result.value;
@@ -87,14 +79,15 @@ const obtenerDetallesPj = async () => {
 const mostrarDetallesPj = (detalles) => {
     contenedorPj.innerHTML = "";
     detalles.forEach(radiante => {
+        const { nombre, orden, atributo, descripcion, img } = radiante;
         const tarjeta = document.createElement("div");
         tarjeta.classList.add('card', 'card--pj');
         tarjeta.innerHTML = `
-            <img src="${radiante.img}" alt="${radiante.nombre}">
-            <p><strong>Orden:</strong> ${radiante.orden}</p>
-            <p><strong>Atributo:</strong> ${radiante.atributo}</p>
-            <p>${radiante.descripcion}</p>
-            <button class="btn-mostrar btn-elegir-pj" data-nombre="${radiante.nombre}">Elegir</button>
+            <img src="${img}" alt="${nombre}">
+            <p><strong>Orden:</strong> ${orden}</p>
+            <p><strong>Atributo:</strong> ${atributo}</p>
+            <p>${descripcion}</p>
+            <button class="btn-mostrar btn-elegir-pj" data-nombre="${nombre}">Elegir</button>
         `;
         contenedorPj.appendChild(tarjeta);
     });
@@ -246,8 +239,8 @@ btnAvanzar.addEventListener('click', async () => {
 
         const personajes = await resPjs.json();
         guionHistoria = await resDialogos.json();
-        const personajeActual = personajes.find(pj => pj.nombre === personajeElegido);
-        sprenNarrador = personajeActual.spren || "Voz Misteriosa";
+        datosHeroeActual = personajes.find(pj => pj.nombre === personajeElegido);
+        sprenNarrador = datosHeroeActual.spren || "Voz Misteriosa";
 
 
         pasoActual = 0;
@@ -255,6 +248,8 @@ btnAvanzar.addEventListener('click', async () => {
     } catch (error) {
         console.log("Error al cargar historia", error);
         document.getElementById("caja-dialogos").innerHTML = "<P>Error de conexión en Roshar.</p>"
+    } finally {
+        console.log("carga de Dialogos finalizada.");
     }
 });
 
@@ -265,10 +260,6 @@ const capitanEnemigo = {
     ataqueMax: 20,
     miniatura: "./assets/imgs/enemigos/portador.jpg"
 };
-
-let vidaActualJugador = 0;
-let vidaActualEnemigo = 90;
-let datosHeroeActual = null;
 
 const renderizarDialogo = () => {
     const cajaDialogos = document.getElementById("caja-dialogos");
@@ -286,8 +277,8 @@ const renderizarDialogo = () => {
     cajaDialogos.innerHTML = `
     <h2>${sprenNarrador} Se materializa y dice:</h2>
     <div class="texto-flotante respiracion">
-    <h3 class="efecto-tipeado">"${dialogoDeTurno.titulo}"</h3>
-    <p class="efecto-tipeado">${dialogoDeTurno.texto}</p>
+      <h3 class="efecto-tipeado">"${dialogoDeTurno.titulo}"</h3>
+      <p class="efecto-tipeado">${dialogoDeTurno.texto}</p>
     </div>
     `;
     if (typeof iniciarAnimacionesTexto === "function") iniciarAnimacionesTexto();
@@ -313,6 +304,8 @@ const prepararAsalto = async () => {
         }
     } catch (error) {
         console.error("Error al cargar la fase de asalto:", error);
+    } finally {
+        console.log("Preparacion de combate lista.");
     }
 };
 
@@ -416,6 +409,7 @@ const finalizar = (resultado) => {
                     <p><strong>Tiempo Total:</strong> ${tiempoTotal} segundos</p>
                 </div>
             `,
+            footer: `<p>Gracias por jugar, proximamente habrá más contenido de Roshar y mas aventuras.</p>`,
             confirmButtonText: "Finalizar Viaje"
         }).then(() => {
             localStorage.removeItem('alforjaGuardada');
