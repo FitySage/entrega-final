@@ -23,10 +23,11 @@ h3 {
 .card {
     background-color: #4B4038;
     border-radius: 20px;
-    padding: 20px;
+    padding: 15px;
     text-align: center;
+    height: 450px;
     border: 5px solid #202940;
-    width: 260px;
+    width: 320px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
@@ -45,7 +46,12 @@ h3 {
     margin-bottom: 15px;
     align-self: center;
 }
-
+.card--pj {
+    height: 900px;
+}
+.card--tienda {
+    height: 450px;
+}
 .btn-mostrar {
     display: inline-block;
     font-family: "Sekuya", system-ui;
@@ -130,14 +136,12 @@ h3 {
     align-self: center;
 }
 
-footer {
+.footer-tarjetas{
     background-color: #202940;
     text-align: center;
     align-items: end;
     align-self: auto;
     align-self: flex-end;
-    border: 10px solid #000000;
-    border-radius: 5px;
 }
 
 .ocultar {

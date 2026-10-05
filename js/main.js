@@ -11,15 +11,65 @@ const guiones = document.getElementById('dialogos');
 const carga = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const seccionPelea = document.getElementById('arena-pelea');
 const contenedorCartaFinal = document.getElementById('carta-final-combate')
-const LIMITE_ALFORJA = 5;
+const limiteAlforja = 5;
 
 let personajeElegido = "";
 let guionHistoria = [];
 let pasoActual = 0;
 let sprenNarrador = "Voz Misteriosa";
-let alforja = [];
 let catalogoAlmacen = [];
 let imagenesPoke = [];
+
+let alforja = JSON.parse(localStorage.getItem('alforjaGuardada')) || [];
+let perfilUsuario = JSON.parse(sessionStorage.getItem('perfilRoshar')) || null;
+let tiempoInicio = Date.now();
+
+setTimeout(() => {
+    if (!perfilUsuario) {
+        Swal.fire({
+            title: "Bienvenido a Roshar",
+            html: `
+                <p> En esta abentura RPG eliges a uno de los 4 personajes, lo equipas y luchas.</p>
+                <input id="swal-nombre" class="swal2-input" placeholder="Como quieres que te llamen?">
+                <div>
+                    <label>¿Conoces el lore de Brandon Sanderson?</label><br><br>
+                    <input type="radio" id="lore-si" name="lore" value="si"> <label for="lore-si">Sí Soy Erudito</label>
+                    <input type="radio" id="lore-no" name="lore" value="no" checked> <label for="lore-no"> No, primera vez</label>
+                </div>
+            `,
+            theme: 'auto',
+            width: "1200px",
+
+            confirmButtonText: "Comenzar aventura",
+            allowOutsideClick: false,
+            preConfirm: () => {
+                const nombre = document.getElementById('swal-nombre').value || "viajero";
+                const conoceLore = document.getElementById('lore-si').checked;
+                return { nombre, conoceLore };
+            },
+            showClass: {
+                popup: `
+      animate__animated
+      animate__fadeInUp
+      animate__faster
+    `
+            },
+            hideClass: {
+                popup: `
+      animate__animated
+      animate__fadeOutDown
+      animate__faster
+    `
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                perfilUsuario = result.value;
+                sessionStorage.setItem('perfilRoshar', JSON.stringify(perfilUsuario));
+                mostrarToast(`¡Que las tormentas te guíen, ${perfilUsuario.nombre}!`);
+            }
+        });
+    }
+}, 1000);
 
 const obtenerDetallesPj = async () => {
     try {
@@ -38,7 +88,7 @@ const mostrarDetallesPj = (detalles) => {
     contenedorPj.innerHTML = "";
     detalles.forEach(radiante => {
         const tarjeta = document.createElement("div");
-        tarjeta.classList.add("card");
+        tarjeta.classList.add('card', 'card--pj');
         tarjeta.innerHTML = `
             <img src="${radiante.img}" alt="${radiante.nombre}">
             <p><strong>Orden:</strong> ${radiante.orden}</p>
@@ -60,10 +110,8 @@ const iniciarExpedicion = (nombrePersonaje) => {
     personajeElegido = nombrePersonaje;
     seccionPj.classList.add('ocultar');
     seccionAlmacen.classList.remove('ocultar');
-
-    tituloAlmacen.textContent = `${personajeElegido} selecciona tus objetos. Límite: ${LIMITE_ALFORJA}`;
+    tituloAlmacen.textContent = `${personajeElegido} selecciona tus objetos. Límite: ${limiteAlforja}`;
     mostrarToast(`¡Has elegido a ${personajeElegido}!`, "#202940");
-
     mostrarItemsAlmacen();
 };
 
@@ -96,12 +144,11 @@ const renderizarVitrina = () => {
     catalogoAlmacen.forEach((dato, index) => {
         const { nombre, descripcion, efecto, stock } = dato;
         const imgPokemon = imagenesPoke[index].sprites.default;
-
         const cantidadEnAlforja = alforja.filter(item => item.nombre === nombre).length;
         const stockDinamico = stock - cantidadEnAlforja;
 
         const tarjeta = document.createElement('div');
-        tarjeta.classList.add('card');
+        tarjeta.classList.add('card', 'card--tienda');
 
         tarjeta.innerHTML = `
             <h3>${nombre}</h3>
@@ -125,12 +172,13 @@ const renderizarVitrina = () => {
 };
 
 const agregarAAlforja = (item) => {
-    if (alforja.length >= LIMITE_ALFORJA) {
+    if (alforja.length >= limiteAlforja) {
         mostrarToast(`¡La alforja de ${personajeElegido} está llena!`, "#ff0000");
         return;
     }
 
     alforja.push(item);
+    localStorage.setItem('alforjaGuardada', JSON.stringify(alforja));
     renderizarAlforja();
     renderizarVitrina();
     mostrarToast(`${item.nombre} guardado.`, "#09ff00");
@@ -138,7 +186,7 @@ const agregarAAlforja = (item) => {
 
 const renderizarAlforja = () => {
     contenedorAlforja.innerHTML = "";
-    contadorAlforja.textContent = `Capacidad de tu alforja: ${alforja.length} / ${LIMITE_ALFORJA}`;
+    contadorAlforja.textContent = `Capacidad de tu alforja: ${alforja.length} / ${limiteAlforja}`;
 
     if (alforja.length === 0) {
         contenedorAlforja.innerHTML = "<p>Tus alforjas están vacías.</p>";
@@ -158,6 +206,7 @@ const renderizarAlforja = () => {
         btn.addEventListener('click', (e) => {
             const index = e.target.dataset.index;
             alforja.splice(index, 1);
+            localStorage.setItem('alforjaGuardada', JSON.stringify(alforja));
             renderizarAlforja();
             renderizarVitrina();
         });
@@ -166,6 +215,7 @@ const renderizarAlforja = () => {
 
 btnVaciar.addEventListener('click', () => {
     alforja = [];
+    localStorage.removeItem('alforjaGuardada');
     renderizarAlforja();
     renderizarVitrina();
 });
@@ -181,27 +231,7 @@ const mostrarToast = (mensaje, colorFondo) => {
 obtenerDetallesPj();
 renderizarAlforja();
 
-setTimeout(() => {
-    Swal.fire({
-        title: "Bienvenido a esta pequeña aventura en Roshar",
-        text: "En esta aventura RGP elijes a uno de los 4 personajes seleccionables, lo equipas con items y luego comienzas tu aventura, adentrandote un poco en la historia del cosmere y luchando para llegar a algun sitio",
-        footer: "Esperemos puedas disfrutarlo. si quedas con ganas de mas puedes buscas la saga de novelas del -Archivo de las tormentas-",
-        theme: 'auto',
-        width: "1200px",
-        showClass: {
-            popup: `
-      animate__animated
-      animate__fadeInUp
-      animate__faster
-    ` },
-        hideClass: {
-            popup: `
-      animate__animated
-      animate__fadeOutDown
-      animate__faster
-    ` }
-    });
-}, 2000)
+
 
 const btnAvanzarDialogo = document.getElementById('btn-avanzar-dialogo');
 btnAvanzar.addEventListener('click', async () => {
@@ -222,7 +252,6 @@ btnAvanzar.addEventListener('click', async () => {
 
         pasoActual = 0;
         renderizarDialogo();
-
     } catch (error) {
         console.log("Error al cargar historia", error);
         document.getElementById("caja-dialogos").innerHTML = "<P>Error de conexión en Roshar.</p>"
@@ -245,16 +274,15 @@ const renderizarDialogo = () => {
     const cajaDialogos = document.getElementById("caja-dialogos");
     if (pasoActual >= guionHistoria.length) {
         cajaDialogos.innerHTML = `
-        <h2 class="efecto-tipeado">Parece que el enfrentamieto es inevitable</h2>
+        <h3 class="efecto-tipeado">Parece que el enfrentamieto es inevitable</h3>
         <p class="efecto-tipeado">Demostremos porque fuimos elejidos para el combate</p>`;
         btnAvanzarDialogo.classList.add("ocultar")
-        iniciarAnimacionesTexto();
+        if (typeof iniciarAnimacinonesTexto === "function") iniciarAnimacionesTexto();
         prepararAsalto();
         return;
     }
 
     const dialogoDeTurno = guionHistoria[pasoActual];
-
     cajaDialogos.innerHTML = `
     <h2>${sprenNarrador} Se materializa y dice:</h2>
     <div class="texto-flotante respiracion">
@@ -262,22 +290,20 @@ const renderizarDialogo = () => {
     <p class="efecto-tipeado">${dialogoDeTurno.texto}</p>
     </div>
     `;
-    iniciarAnimacionesTexto();
+    if (typeof iniciarAnimacionesTexto === "function") iniciarAnimacionesTexto();
 
 };
-
 const prepararAsalto = async () => {
     await carga(2500);
-    
     guiones.classList.add('ocultar');
     seccionPelea.classList.remove('ocultar');
 
     try {
         const response = await fetch('./json/characters.json');
         const personajes = await response.json();
-        datosHéroeActual = personajes.find(pj => pj.nombre === personajeElegido);
+        datosHeroeActual = personajes.find(pj => pj.nombre === personajeElegido);
 
-        if (datosHéroeActual) {
+        if (datosHeroeActual) {
             if (personajeElegido === "Kaladin") vidaActualJugador = 100;
             else if (personajeElegido === "Shallan") vidaActualJugador = 80;
             else if (personajeElegido === "Dalinar") vidaActualJugador = 120;
@@ -293,8 +319,8 @@ const prepararAsalto = async () => {
 const actualizarPantallaCombate = (actualizarEstados) => {
     const itemsNombres = alforja.map(item => item.nombre);
     const alforjaTexto = itemsNombres.length > 0 ? itemsNombres.join(", ") : "Vacía";
-    const {nombre, img, orden, atributo, estadisticas} = datosHéroeActual
-    const {nombreEnemigo, raza, miniatura, tipo} = capitanEnemigo
+    const { nombre, img, orden, atributo, estadisticas } = datosHeroeActual
+    const { nombreEnemigo, raza, miniatura, tipo } = capitanEnemigo
     contenedorCartaFinal.innerHTML = `
         <div class="grid-combate">
             <div class="card-combate">
@@ -314,7 +340,6 @@ const actualizarPantallaCombate = (actualizarEstados) => {
 
             <div class="card-combate">
                 <h2> ${nombreEnemigo} </h2>
-                <h3 style="color: #ff6b6b;">${raza}</h3>
                 <img src="${miniatura}" alt="${raza}" width="100%">
                 <p><strong>Tipo:</strong> ${tipo}</p>
                 <p style="font-size: 1.2rem; color: #ff4a4a;"><strong>Vida Enemigo:</strong> ${vidaActualEnemigo} PV</p>
@@ -329,42 +354,74 @@ const actualizarPantallaCombate = (actualizarEstados) => {
     `;
 
     const btnLucha = document.getElementById('btn-comenzar-pelea');
-    
+
     if (vidaActualJugador <= 0 || vidaActualEnemigo <= 0) {
         btnLucha.disabled = true;
         btnLucha.textContent = "Combate Finalizado";
+
     } else {
         btnLucha.addEventListener('click', procesarTurnoCombate);
     }
+
 };
 
+
 const procesarTurnoCombate = () => {
-    const dañoEnemigo = Math.floor(Math.random() * capitanEnemigo.ataqueMax) + 5; 
-    const dañoJugador = Math.floor(Math.random() * 25) + 10; 
+    const dañoEnemigo = Math.floor(Math.random() * capitanEnemigo.ataqueMax) + 5;
+    const dañoJugador = Math.floor(Math.random() * 25) + 10;
 
     vidaActualJugador = Math.max(0, vidaActualJugador - dañoEnemigo);
     vidaActualEnemigo = Math.max(0, vidaActualEnemigo - dañoJugador);
 
     let logResultado = `
         <p>Los combatientes se cruzan en el campo...</p>
-        <p style="color: #ff4a4a; margin: 8px 0;">💥 <strong>${capitanEnemigo.nombre}</strong> te inflige <strong>${dañoEnemigo} PV</strong>.</p>
+        <p style="color: #ff4a4a; margin: 8px 0;">💥 <strong>${capitanEnemigo.nombreEnemigo}</strong> te inflige <strong>${dañoEnemigo} PV</strong>.</p>
         <p style="color: #4aff4a; margin: 8px 0;">⚔️ Tu contraataque le asesta <strong>${dañoJugador} de daño</strong>.</p>
     `;
 
     if (vidaActualEnemigo <= 0 && vidaActualJugador <= 0) {
         logResultado += `<h3 style="color: #caaa98; margin-top: 15px;">¡Mutuo K.O.! Ambos cayeron por las heridas.</h3>`;
-        mostrarToast("Empate trágico en Roshar.", "#ff9900"); //
+        mostrarToast("Empate trágico en Roshar.", "#ff9900");
+        finalizar("Empate");
     } else if (vidaActualEnemigo <= 0) {
         logResultado += `<h3 style="color: #4aff4a; margin-top: 15px;">¡Victoria! Has derrotado al Capitán.</h3>`;
-        mostrarToast("¡Combate ganado con éxito!", "#09ff00"); //
+        mostrarToast("¡Combate ganado con éxito!", "#09ff00");
+        finalizar("Victoria");
     } else if (vidaActualJugador <= 0) {
         logResultado += `<h3 style="color: #ff4a4a; margin-top: 15px;">Has caído en combate... La tormenta te reclama.</h3>`;
-        mostrarToast("Tu Radiante ha sido derrotado.", "#ff0000"); //
+        mostrarToast("Tu Radiante ha sido derrotado.", "#ff0000");
+        finalizar("Derrota");
     } else {
-        mostrarToast("¡Ronda completada!", "#202940"); //
+        mostrarToast("¡Ronda completada!", "#202940");
     }
 
-actualizarPantallaCombate(logResultado);
+    actualizarPantallaCombate(logResultado);
+};
+
+const finalizar = (resultado) => {
+    const tiempoTotal = Math.floor((Date.now() - tiempoInicio) / 1000);
+    const nombreJugador = perfilUsuario ? perfilUsuario.nombre : "viajero";
+    const statusLore = perfilUsuario && perfilUsuario.conoceLore ? "Erudito del Cosmere" : "Nuevo en el Cosmere";
+
+    setTimeout(() => {
+        Swal.fire({
+            title: "Tus estadisticas",
+            html: `
+                <div>
+                    <p><strong>Jugador:</strong> ${nombreJugador}</p>
+                    <p><strong>Perfil:</strong> ${statusLore}</p>
+                    <p><strong>Radiante Elegido:</strong> ${personajeElegido}</p>
+                    <p><strong>Objetos Elegidos:</strong> ${alforja.length} / ${limiteAlforja}</p>
+                    <p><strong>Resultado del Final:</strong> ${resultado}</p>
+                    <p><strong>Tiempo Total:</strong> ${tiempoTotal} segundos</p>
+                </div>
+            `,
+            confirmButtonText: "Finalizar Viaje"
+        }).then(() => {
+            localStorage.removeItem('alforjaGuardada');
+            location.reload();
+        });
+    }, 2000);
 };
 
 btnAvanzarDialogo.addEventListener('click', () => {

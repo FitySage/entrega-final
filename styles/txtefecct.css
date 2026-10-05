@@ -14,15 +14,54 @@
     50% { opacity: 0; }
 }
 
+.caja-dialogos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    width: 100%;
+    height: 25vh;
+    box-sizing: border-box;
+}
+
 .texto-flotante {
+    position: relative;
     margin: 10%;
-    padding: 20px;
+    padding: 15px 25px;
     text-align: center;
-    background-color: aliceblue;
-    border: 2px solid #CAAA98;
-    border-radius: 15px;
+    background-color: rgb(240, 248, 255);
+    color: #202940;
+    border: 3px solid #CAAA98;
+    border-radius: 25px;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
     display: inline-block;
+    font-size: 1.1rem;
     will-change: transform;
+}
+
+.texto-flotante::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 15px 12px 0;
+    border-style: solid;
+    border-color: #CAAA98 transparent transparent; 
+    display: block;
+    width: 0;
+}
+
+.texto-flotante::before {
+    content: '';
+    position: absolute;
+    bottom: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 12px 9px 0;
+    border-style: solid;
+    border-color: rgb(240, 248, 255) transparent transparent;
+    z-index: 1;
 }
 
 .texto-flotante.respiracion {
@@ -37,9 +76,10 @@
         transform: scale(1);
     }
     50% {
-        transform: scale(1.1);
+        transform: scale(1.03);
     }
     100% {
         transform: scale(1);
     }
 }
+

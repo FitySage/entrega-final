@@ -5,22 +5,14 @@
   },
   {
     "titulo": "Cuidado con los flancos",
-    "texto": "Se están reagrupando en la colina. Mantengan la formación."
+    "texto": "Se están reagrupando en la colina. Mantete alerta."
   },
   {
-    "titulo": "Parece que su capitan es un simple lacayo",
-    "texto": "Hay que ir con cautela, puede ser una trampa"
+    "titulo": "Parece que su capitan es un simple renacido, al parecer no es muy fuerte",
+    "texto": "Hay que ir con cautela, puede ser una trampa y no queremos volver a caer en una de esas"
   },
   {
     "titulo": "¡Está sin resguardo, luchemos ahora!",
-    "texto": "Comezemos"
-  },
-  {
-    "titulo": "¡JA, Son mas tontos de lo que parece!",
-    "texto": "Ciertamente nos subestimaron, pero no creo que corramos la misma suerte la proxima"
-  },
-  {
-    "titulo": "Hora de descansar",
-    "texto": "Hemos ganado tiempo. Revisa tus provisiones antes de la próxima tormenta."
+    "texto": "Comezemos, ¡no hay tiempo que perder!"
   }
 ]
