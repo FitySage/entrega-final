@@ -32,11 +32,11 @@ setTimeout(() => {
         Swal.fire({
             title: "Bienvenido a Roshar",
             html: `
-                <p> En esta abentura RPG eliges a uno de los 4 personajes, lo equipas y luchas.</p>
+                <p> En esta aventura RPG eliges a uno de los 4 personajes, lo equipas y luchas.</p>
                 <input id="swal-nombre" class="swal2-input" placeholder="Como quieres que te llamen?">
                 <div>
                     <label>¿Conoces el lore de Brandon Sanderson?</label><br><br>
-                    <input type="radio" id="lore-si" name="lore" value="si"> <label for="lore-si">Sí Soy Erudito</label>
+                    <input type="radio" id="lore-si" name="lore" value="si"> <label for="lore-si">Sí, Soy Erudito</label>
                     <input type="radio" id="lore-no" name="lore" value="no" checked> <label for="lore-no"> No, primera vez</label>
                 </div>
             `,
