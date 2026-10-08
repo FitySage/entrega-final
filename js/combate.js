@@ -33,6 +33,8 @@ const prepararAsalto = async () => {
         }
     } catch (error) {
         console.error("Error al cargar la fase de asalto:", error);
+    } finally {
+        
     }
 };
 

@@ -37,7 +37,6 @@
     border-radius: 25px;
     box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
     display: inline-block;
-    font-size: 0.95rem;
     will-change: transform;
 }
 
