@@ -8,9 +8,9 @@ const contadorAlforja = document.getElementById('contador-alforja');
 const btnVaciar = document.getElementById('btn-vaciar');
 const btnAvanzar = document.getElementById('btn-avanzar');
 const guiones = document.getElementById('dialogos');
+const btnAvanzarDialogo = document.getElementById('btn-avanzar-dialogo');
+
 const carga = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const seccionPelea = document.getElementById('arena-pelea');
-const contenedorCartaFinal = document.getElementById('carta-final-combate')
 const limiteAlforja = 5;
 
 let personajeElegido = "";
@@ -20,12 +20,10 @@ let sprenNarrador = "Voz Misteriosa";
 let catalogoAlmacen = [];
 let imagenesPoke = [];
 let datosHeroeActual = null;
-let vidaActualJugador = 0;
-let vidaActualEnemigo = 90;
-
-let alforja = JSON.parse(localStorage.getItem('alforjaGuardada')) || [];
-let perfilUsuario = JSON.parse(sessionStorage.getItem('perfilRoshar')) || null;
 let tiempoInicio = Date.now();
+
+let alforja = cargarAlforja();
+let perfilUsuario = cargarPerfil();
 
 setTimeout(() => {
     if (!perfilUsuario) {
@@ -42,21 +40,17 @@ setTimeout(() => {
             `,
             theme: 'auto',
             width: "1200px",
-
             confirmButtonText: "Comenzar aventura",
             allowOutsideClick: false,
             preConfirm: () => {
                 const nombre = document.getElementById('swal-nombre').value || "viajero";
                 const conoceLore = document.getElementById('lore-si').checked;
                 return { nombre, conoceLore };
-            },
-            showClass: { popup: `animate__animated animate__fadeInUp animate__faster` },
-            hideClass: { popup: `animate__animated animate__fadeOutDown animate__faster` }
-
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 perfilUsuario = result.value;
-                sessionStorage.setItem('perfilRoshar', JSON.stringify(perfilUsuario));
+                guardarPerfil(perfilUsuario);
                 mostrarToast(`¡Que las tormentas te guíen, ${perfilUsuario.nombre}!`);
             }
         });
@@ -71,8 +65,6 @@ const obtenerDetallesPj = async () => {
         mostrarDetallesPj(detalles);
     } catch (error) {
         console.error('Error:', error);
-    } finally {
-        console.log("Carga de personajes finalizado.")
     }
 };
 
@@ -122,18 +114,14 @@ const mostrarItemsAlmacen = async () => {
 
         catalogoAlmacen = await respuestaLocal.json();
         renderizarVitrina();
-
     } catch (error) {
         console.error("Error:", error.message);
         contenedorItems.innerHTML = "Error al cargar los suministros.";
-    } finally {
-        console.log("Proceso de obtención de datos finalizado.");
     }
 };
 
 const renderizarVitrina = () => {
     contenedorItems.innerHTML = "";
-
     catalogoAlmacen.forEach((dato, index) => {
         const { nombre, descripcion, efecto, stock } = dato;
         const imgPokemon = imagenesPoke[index].sprites.default;
@@ -142,7 +130,6 @@ const renderizarVitrina = () => {
 
         const tarjeta = document.createElement('div');
         tarjeta.classList.add('card', 'card--tienda');
-
         tarjeta.innerHTML = `
             <h3>${nombre}</h3>
             <img src="${imgPokemon}" alt="${nombre}" width="70">
@@ -154,24 +141,20 @@ const renderizarVitrina = () => {
         contenedorItems.appendChild(tarjeta);
     });
 
-
-
     document.querySelectorAll('.btn-agarrar-item').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const itemData = JSON.parse(e.target.dataset.item);
-            agregarAAlforja(itemData);
+            agregarAAlforja(JSON.parse(e.target.dataset.item));
         });
     });
 };
 
 const agregarAAlforja = (item) => {
     if (alforja.length >= limiteAlforja) {
-        mostrarToast(`¡La alforja de ${personajeElegido} está llena!`, "#ff0000");
+        mostrarToast(`¡La alforja está llena!`, "#ff0000");
         return;
     }
-
     alforja.push(item);
-    localStorage.setItem('alforjaGuardada', JSON.stringify(alforja));
+    guardarAlforja(alforja);
     renderizarAlforja();
     renderizarVitrina();
     mostrarToast(`${item.nombre} guardado.`, "#09ff00");
@@ -179,27 +162,23 @@ const agregarAAlforja = (item) => {
 
 const renderizarAlforja = () => {
     contenedorAlforja.innerHTML = "";
-    contadorAlforja.textContent = `Capacidad de tu alforja: ${alforja.length} / ${limiteAlforja}`;
+    contadorAlforja.textContent = `Capacidad: ${alforja.length} / ${limiteAlforja}`;
 
     if (alforja.length === 0) {
-        contenedorAlforja.innerHTML = "<p>Tus alforjas están vacías.</p>";
+        contenedorAlforja.innerHTML = "<p>Tu alforja está vacía.</p>";
         return;
     }
 
     alforja.forEach((item, index) => {
         const itemP = document.createElement("p");
-        itemP.innerHTML = `
-            ${item.nombre} 
-            <button class="btn-quitar" data-index="${index}">❌</button>
-        `;
+        itemP.innerHTML = `${item.nombre} <button class="btn-quitar" data-index="${index}">❌</button>`;
         contenedorAlforja.appendChild(itemP);
     });
 
     document.querySelectorAll('.btn-quitar').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const index = e.target.dataset.index;
-            alforja.splice(index, 1);
-            localStorage.setItem('alforjaGuardada', JSON.stringify(alforja));
+            alforja.splice(e.target.dataset.index, 1);
+            guardarAlforja(alforja);
             renderizarAlforja();
             renderizarVitrina();
         });
@@ -208,25 +187,11 @@ const renderizarAlforja = () => {
 
 btnVaciar.addEventListener('click', () => {
     alforja = [];
-    localStorage.removeItem('alforjaGuardada');
+    borrarAlforja();
     renderizarAlforja();
     renderizarVitrina();
 });
 
-const mostrarToast = (mensaje, colorFondo) => {
-    Toastify({
-        text: mensaje,
-        duration: 3000,
-        style: { background: colorFondo, color: "#fff" }
-    }).showToast();
-};
-
-obtenerDetallesPj();
-renderizarAlforja();
-
-
-
-const btnAvanzarDialogo = document.getElementById('btn-avanzar-dialogo');
 btnAvanzar.addEventListener('click', async () => {
     seccionAlmacen.classList.add('ocultar');
     guiones.classList.remove('ocultar');
@@ -236,189 +201,57 @@ btnAvanzar.addEventListener('click', async () => {
             fetch('./json/characters.json'),
             fetch('./json/guion.json')
         ]);
-
         const personajes = await resPjs.json();
         guionHistoria = await resDialogos.json();
+        
         datosHeroeActual = personajes.find(pj => pj.nombre === personajeElegido);
         sprenNarrador = datosHeroeActual.spren || "Voz Misteriosa";
-
-
         pasoActual = 0;
+        
         renderizarDialogo();
     } catch (error) {
-        console.log("Error al cargar historia", error);
-        document.getElementById("caja-dialogos").innerHTML = "<P>Error de conexión en Roshar.</p>"
-    } finally {
-        console.log("carga de Dialogos finalizada.");
+        console.error("Error al cargar historia", error);
+        document.getElementById("caja-dialogos").innerHTML = "<p>Error de conexión en Roshar.</p>";
     }
 });
-
-const capitanEnemigo = {
-    nombreEnemigo: "Eshonai",
-    raza: "Portador del Vacío",
-    tipo: "fusionado",
-    ataqueMax: 20,
-    miniatura: "./assets/imgs/enemigos/portador.jpg"
-};
 
 const renderizarDialogo = () => {
     const cajaDialogos = document.getElementById("caja-dialogos");
     if (pasoActual >= guionHistoria.length) {
         cajaDialogos.innerHTML = `
-        <h3 class="efecto-tipeado">Parece que el enfrentamieto es inevitable</h3>
-        <p class="efecto-tipeado">Demostremos porque fuimos elejidos para el combate</p>`;
-        btnAvanzarDialogo.classList.add("ocultar")
-        if (typeof iniciarAnimacinonesTexto === "function") iniciarAnimacionesTexto();
+        <h3 class="efecto-tipeado">Parece que el enfrentamiento es inevitable</h3>
+        <p class="efecto-tipeado">Demostremos por qué fuimos elegidos para el combate</p>`;
+        btnAvanzarDialogo.classList.add("ocultar");
+        
+        if (typeof iniciarAnimacionesTexto === "function") iniciarAnimacionesTexto();
         prepararAsalto();
         return;
     }
 
     const dialogoDeTurno = guionHistoria[pasoActual];
     cajaDialogos.innerHTML = `
-    <h2>${sprenNarrador} Se materializa y dice:</h2>
+    <h2>${sprenNarrador} se materializa y dice:</h2>
     <div class="texto-flotante respiracion">
       <h3 class="efecto-tipeado">"${dialogoDeTurno.titulo}"</h3>
       <p class="efecto-tipeado">${dialogoDeTurno.texto}</p>
     </div>
     `;
+
     if (typeof iniciarAnimacionesTexto === "function") iniciarAnimacionesTexto();
-
-};
-const prepararAsalto = async () => {
-    await carga(2500);
-    guiones.classList.add('ocultar');
-    seccionPelea.classList.remove('ocultar');
-
-    try {
-        const response = await fetch('./json/characters.json');
-        const personajes = await response.json();
-        datosHeroeActual = personajes.find(pj => pj.nombre === personajeElegido);
-
-        if (datosHeroeActual) {
-            if (personajeElegido === "Kaladin") vidaActualJugador = 100;
-            else if (personajeElegido === "Shallan") vidaActualJugador = 80;
-            else if (personajeElegido === "Dalinar") vidaActualJugador = 120;
-            else if (personajeElegido === "Lift") vidaActualJugador = 70;
-
-            actualizarPantallaCombate("¡La batalla está por comenzar! Prepárate para el asalto.");
-        }
-    } catch (error) {
-        console.error("Error al cargar la fase de asalto:", error);
-    } finally {
-        console.log("Preparacion de combate lista.");
-    }
-};
-
-const actualizarPantallaCombate = (actualizarEstados) => {
-    const itemsNombres = alforja.map(item => item.nombre);
-    const alforjaTexto = itemsNombres.length > 0 ? itemsNombres.join(", ") : "Vacía";
-    const { nombre, img, orden, atributo, estadisticas } = datosHeroeActual
-    const { nombreEnemigo, raza, miniatura, tipo } = capitanEnemigo
-    contenedorCartaFinal.innerHTML = `
-        <div class="grid-combate">
-            <div class="card-combate">
-                <h3>${nombre}</h3>
-                <img src="${img}" alt="${nombre}" width="100%">
-                <p><strong>Orden:</strong> ${orden}</p>
-                <p><strong>Atributo:</strong> ${atributo}</p>
-                <p style="font-size: 1.2rem; color: #4aff4a;"><strong>Vida Actual:</strong> ${vidaActualJugador} PV</p>
-                <p><small style="color: #9A8678;">Base original: ${estadisticas}</small></p>
-                <p><strong>Alforja:</strong> ${alforjaTexto}</p>
-            </div>
-
-            <div class="seccion-media">
-                <h2>Estado de la Batalla</h2>
-                <div id="log-combate">${actualizarEstados}</div>
-            </div>
-
-            <div class="card-combate">
-                <h2> ${nombreEnemigo} </h2>
-                <img src="${miniatura}" alt="${raza}" width="100%">
-                <p><strong>Tipo:</strong> ${tipo}</p>
-                <p style="font-size: 1.2rem; color: #ff4a4a;"><strong>Vida Enemigo:</strong> ${vidaActualEnemigo} PV</p>
-                <p><small style="color: #9A8678;">Base original: PV:90 AD:20 Def:40</small></p>
-                <p><strong>Peligrosidad:</strong> Media</p>
-            </div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 25px;">
-            <button class="btn-mostrar" id="btn-comenzar-pelea">Lanzar Ataque al Azar</button>
-        </div>
-    `;
-
-    const btnLucha = document.getElementById('btn-comenzar-pelea');
-
-    if (vidaActualJugador <= 0 || vidaActualEnemigo <= 0) {
-        btnLucha.disabled = true;
-        btnLucha.textContent = "Combate Finalizado";
-
-    } else {
-        btnLucha.addEventListener('click', procesarTurnoCombate);
-    }
-
-};
-
-
-const procesarTurnoCombate = () => {
-    const dañoEnemigo = Math.floor(Math.random() * capitanEnemigo.ataqueMax) + 5;
-    const dañoJugador = Math.floor(Math.random() * 25) + 10;
-
-    vidaActualJugador = Math.max(0, vidaActualJugador - dañoEnemigo);
-    vidaActualEnemigo = Math.max(0, vidaActualEnemigo - dañoJugador);
-
-    let logResultado = `
-        <p>Los combatientes se cruzan en el campo...</p>
-        <p style="color: #ff4a4a; margin: 8px 0;">💥 <strong>${capitanEnemigo.nombreEnemigo}</strong> te inflige <strong>${dañoEnemigo} PV</strong>.</p>
-        <p style="color: #4aff4a; margin: 8px 0;">⚔️ Tu contraataque le asesta <strong>${dañoJugador} de daño</strong>.</p>
-    `;
-
-    if (vidaActualEnemigo <= 0 && vidaActualJugador <= 0) {
-        logResultado += `<h3 style="color: #caaa98; margin-top: 15px;">¡Mutuo K.O.! Ambos cayeron por las heridas.</h3>`;
-        mostrarToast("Empate trágico en Roshar.", "#ff9900");
-        finalizar("Empate");
-    } else if (vidaActualEnemigo <= 0) {
-        logResultado += `<h3 style="color: #4aff4a; margin-top: 15px;">¡Victoria! Has derrotado al Capitán.</h3>`;
-        mostrarToast("¡Combate ganado con éxito!", "#09ff00");
-        finalizar("Victoria");
-    } else if (vidaActualJugador <= 0) {
-        logResultado += `<h3 style="color: #ff4a4a; margin-top: 15px;">Has caído en combate... La tormenta te reclama.</h3>`;
-        mostrarToast("Tu Radiante ha sido derrotado.", "#ff0000");
-        finalizar("Derrota");
-    } else {
-        mostrarToast("¡Ronda completada!", "#202940");
-    }
-
-    actualizarPantallaCombate(logResultado);
-};
-
-const finalizar = (resultado) => {
-    const tiempoTotal = Math.floor((Date.now() - tiempoInicio) / 1000);
-    const nombreJugador = perfilUsuario ? perfilUsuario.nombre : "viajero";
-    const statusLore = perfilUsuario && perfilUsuario.conoceLore ? "Erudito del Cosmere" : "Nuevo en el Cosmere";
-
-    setTimeout(() => {
-        Swal.fire({
-            title: "Tus estadisticas",
-            html: `
-                <div>
-                    <p><strong>Jugador:</strong> ${nombreJugador}</p>
-                    <p><strong>Perfil:</strong> ${statusLore}</p>
-                    <p><strong>Radiante Elegido:</strong> ${personajeElegido}</p>
-                    <p><strong>Objetos Elegidos:</strong> ${alforja.length} / ${limiteAlforja}</p>
-                    <p><strong>Resultado del Final:</strong> ${resultado}</p>
-                    <p><strong>Tiempo Total:</strong> ${tiempoTotal} segundos</p>
-                </div>
-            `,
-            footer: `<p>Gracias por jugar, proximamente habrá más contenido de Roshar y mas aventuras.</p>`,
-            confirmButtonText: "Finalizar Viaje"
-        }).then(() => {
-            localStorage.removeItem('alforjaGuardada');
-            location.reload();
-        });
-    }, 2000);
 };
 
 btnAvanzarDialogo.addEventListener('click', () => {
     pasoActual++;
     renderizarDialogo();
 });
+
+const mostrarToast = (mensaje, colorFondo = "#333") => {
+    Toastify({
+        text: mensaje,
+        duration: 3000,
+        style: { background: colorFondo, color: "#fff" }
+    }).showToast();
+};
+
+obtenerDetallesPj();
+renderizarAlforja();

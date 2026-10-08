@@ -1,1 +1,7 @@
-# entrega-final
+Pagina interactiva estilo juego RPG
+El motivo de esta pagina es aplicar conocmimientos aprendidos en el curso de JavaScrip de CoderHouse como pryecto final para aprobar el curso.
+se plican lo aprendido en clase y se evalua el desarrollo de la pagina web.
+¿Como funciona este sitio web?
+El sitio te recibe con un mensaje donde hay un campo para completar con tu nombre o apodo, con una pregunta de si o no.
+Luego tenes que elegir sobre 4 cuartas donde se ecnuentran personajes ficticios cada uno con una breve descripcion. Posteriormente elejis objetos, que cargan simulando la recepcion de datos, para interactuar con los objetos podes seleccionar agregarlos a tus obejetos "Alforja" o vaciar esta misma para continuar sin objeto.
+En el proximo paso se despliega un cartel de texto simulando un dialogo. Luego aparece una pantalla donde se enfrenta el personaje elejido contra un enemigo, el enfrentamiento ocurre con ataques al azar, pueden ocurrir 3 cosas, puedes ganar, perder o empatar. cuando se termina la simulacion de la pelea la pagina te despide dandote un tus resultados en una ventanita emergente con tu nombre, el tiempo que estuviste en el sitio y un breve mensaje final de agradecimiento.

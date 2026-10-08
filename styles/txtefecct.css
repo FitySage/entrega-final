@@ -1,5 +1,6 @@
 .efecto-tipeado{
     text-align: center;
+    font-size: 1rem;
     
 }
 .efecto-tipeado::after {
@@ -26,8 +27,9 @@
 
 .texto-flotante {
     position: relative;
-    margin: 10%;
-    padding: 15px 25px;
+    margin: 7%;
+    padding: 15px;
+    font-size: 0.9rem;
     text-align: center;
     background-color: rgb(240, 248, 255);
     color: #202940;
@@ -35,7 +37,7 @@
     border-radius: 25px;
     box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
     display: inline-block;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     will-change: transform;
 }
 
