@@ -1,7 +1,31 @@
+#dialogos {
+    margin: 20vh auto 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 25px;
+    background-color: rgb(240, 248, 255);
+    color: #202940;
+    border: 3px solid #CAAA98;
+    border-radius: 25px;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 850px;
+    box-sizing: border-box;
+}
+
+.caja-dialogos {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
 .efecto-tipeado{
     text-align: center;
-    font-size: 1rem;
-    
+    font-size: 1.1rem;
+    margin: 0;
 }
 .efecto-tipeado::after {
     content: "|";
@@ -15,28 +39,20 @@
     50% { opacity: 0; }
 }
 
-.caja-dialogos {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 10px;
-    width: 100%;
-    height: 25vh;
-    box-sizing: border-box;
-}
+
 
 .texto-flotante {
     position: relative;
-    margin: 7%;
-    padding: 15px;
+    padding: 25px;
     font-size: 0.9rem;
-    text-align: center;
     background-color: rgb(240, 248, 255);
     color: #202940;
     border: 3px solid #CAAA98;
     border-radius: 25px;
     box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
-    display: inline-block;
+    width: 100%;
+    max-width: 650px;
+    box-sizing: border-box;
     will-change: transform;
 }
 
@@ -73,14 +89,11 @@
 }
 
 @keyframes respiracion {
-    0% {
+    0%, 100% {
         transform: scale(1);
     }
     50% {
         transform: scale(1.03);
-    }
-    100% {
-        transform: scale(1);
     }
 }
 

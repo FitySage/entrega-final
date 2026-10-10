@@ -65,10 +65,7 @@ const obtenerDetallesPj = async () => {
         mostrarDetallesPj(detalles);
     } catch (error) {
         console.error('Error:', error);
-    } finally {
-
-    }
-};
+    }};
 
 const mostrarDetallesPj = (detalles) => {
     contenedorPj.innerHTML = "";
@@ -236,7 +233,8 @@ const renderizarDialogo = () => {
 
     const dialogoDeTurno = guionHistoria[pasoActual];
     cajaDialogos.innerHTML = `
-    <h2>${sprenNarrador} se materializa y dice:</h2>
+    <h2>Durante el viaje tu Spren decide ponerse hablador </h2>
+    <h3>${sprenNarrador} se materializa y dice:</h3>
     <div class="texto-flotante respiracion">
       <h3 class="efecto-tipeado">"${dialogoDeTurno.titulo}"</h3>
       <p class="efecto-tipeado">${dialogoDeTurno.texto}</p>
